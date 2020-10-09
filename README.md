@@ -1,1 +1,2 @@
-- 自己写组件和动画！！
+npm install 
+npm run serve
