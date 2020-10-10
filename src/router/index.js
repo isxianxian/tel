@@ -23,6 +23,10 @@ const routes = [
     component: Layout,
     children: [
       {
+        path: '/',
+        redirect: '/home'
+      },
+      {
         path: '/home',
         component: Home
       },

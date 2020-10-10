@@ -280,7 +280,7 @@
                 searchForm: {},
                 payVisible: false,
                 mesVisible: false,
-                choiceVisible: true,
+                choiceVisible: false,
                 telTypes: [
                     // 服务类型
                     { name: '亲情通话', money: '150', unit: '年', pay: false },
