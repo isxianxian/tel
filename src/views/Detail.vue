@@ -58,16 +58,13 @@
     }
 </script>
 
-<style lang="scss" >
+<style scoped  lang="scss" >
     .record-box {
-        .record-tit {
-            border-radius: 5px 5px 0 0;
+        .time {
+            min-width: 120px;
         }
-        .type {
-            min-width: 150px;
-        }
-        .count {
-            min-width: 200px;
+        .money {
+            min-width: 120px;
         }
     }
 </style>

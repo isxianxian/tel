@@ -43,7 +43,7 @@
                 @click="changeTab(4)"
             >
                 <div class="bg icon4"></div>
-                <div>我的</div>
+                <div>商店</div>
             </div>
         </div>
     </div>
@@ -66,28 +66,27 @@
                     1: '/tel',
                     2: '/msg',
                     3: '/fraction',
-                    4: '/me',
+                    4: '/store',
                 }
                 this.$router.push(obj[index])
             },
         },
         components: {},
         created() {
-            console.log(this.$route)
             let { path } = this.$route,
                 obj = {
                     '/home': 0,
                     '/tel': 1,
                     '/msg': 2,
                     '/fraction': 3,
-                    '/me': 4,
-                };
+                    '/store': 4,
+                }
             this.tabIndex = obj[path]
         },
     }
 </script>
 
-<style lang="scss" >
+<style scoped  lang="scss" >
     .home {
         .main {
             height: calc(100% - 219px);

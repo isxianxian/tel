@@ -2,7 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Layout from '../views/Layout.vue'
 import Home from '../views/Home.vue'
-import Me from '../views/Me.vue'
+// import Me from '../views/Me.vue'
+import Store from '../views/Store.vue'
 import Msg from '../views/Msg.vue'
 import Tel from '../views/Tel.vue'
 import Fraction from '../views/Fraction'
@@ -12,6 +13,7 @@ import History from '../views/History'
 import Record from '../views/Record'
 import FamilyTel from '../views/FamilyTel'
 import Pay from '../views/Pay'
+import SetMeal from '../views/SetMeal'
 
 
 Vue.use(VueRouter)
@@ -43,9 +45,13 @@ const routes = [
         component: Fraction
       },
       {
-        path: '/me',
-        component: Me
-      }
+        path: '/store',
+        component: Store
+      },
+      // {
+      //   path: '/me',
+      //   component: Me
+      // }
     ]
   },
   { path: '/bind', component: Bind },
@@ -54,6 +60,7 @@ const routes = [
   { path: '/history', component: History },
   { path: '/record', component: Record },
   { path: '/familyTel', component: FamilyTel },
+  { path: '/setMeal', component: SetMeal },
 ]
 
 const router = new VueRouter({

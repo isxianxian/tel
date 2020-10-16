@@ -83,7 +83,7 @@
     }
 </script>
 
-<style lang="scss" >
+<style scoped lang="scss" >
     .home {
         .home-bg {
             width: 100%;

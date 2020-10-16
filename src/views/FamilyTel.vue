@@ -133,6 +133,8 @@
             font-size: 12px;
         }
     }
+</style>
+<style lang="scss" >
     .el-dialog__header .el-dialog__title {
         font-size: 16px; /*no */
         font-weight: bold;

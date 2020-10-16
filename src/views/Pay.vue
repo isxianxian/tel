@@ -365,7 +365,7 @@
     }
 </script>
 
-<style lang="scss" >
+<style  lang="scss" >
     .student-box {
         .el-form-item {
             margin-bottom: 20px;

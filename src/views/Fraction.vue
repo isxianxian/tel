@@ -86,7 +86,7 @@
     }
 </script>
 
-<style lang="scss" >
+<style scoped  lang="scss" >
     .record-box {
         .record-tit {
             border-radius: 5px 5px 0 0;
