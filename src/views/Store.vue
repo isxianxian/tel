@@ -68,47 +68,52 @@
                 :style="{ height: showMeal ? mealH : 0 }"
             >
                 <div ref="meal">
-                    <div
-                        v-for="(item, index) in usedPlan"
-                        :key="item.id"
-                        class="pt-6 pb-4"
-                        :class="{ 'bor-b': !(index == usedPlan.length - 1) }"
-                    >
-                        <div class="txt-tit fs-bold txt-cen">
-                            {{ item.moduleName }}
-                        </div>
-                        <div class="flex jus-between ali-cen my-4">
-                            <div>
-                                本月余额:
-                                <span class="txt-orange">
-                                    {{
-                                        item.total +
-                                        item.extraTotal -
-                                        item.used -
-                                        item.extraUsed
-                                    }} </span
-                                >分钟
+                    <div v-if="usedPlan.length > 0">
+                        <div
+                            v-for="(item, index) in usedPlan"
+                            :key="item.id"
+                            class="pt-6 pb-4"
+                            :class="{
+                                'bor-b': !(index == usedPlan.length - 1),
+                            }"
+                        >
+                            <div class="txt-tit fs-bold txt-cen">
+                                {{ item.moduleName }}
                             </div>
+                            <div class="flex jus-between ali-cen my-4">
+                                <div>
+                                    本月余额:
+                                    <span class="txt-orange">
+                                        {{
+                                            item.total +
+                                            item.extraTotal -
+                                            item.used -
+                                            item.extraUsed
+                                        }} </span
+                                    >分钟
+                                </div>
 
-                            <div class="fs-10">
-                                （套餐：{{ item.used }}/{{
-                                    item.total
-                                }}
-                                流量包：{{ item.extraUsed }}/{{
-                                    item.extraTotal
-                                }}）
+                                <div class="fs-10">
+                                    （套餐：{{ item.used }}/{{
+                                        item.total
+                                    }}
+                                    流量包：{{ item.extraUsed }}/{{
+                                        item.extraTotal
+                                    }}）
+                                </div>
                             </div>
-                        </div>
-                        <div class="txt-r txt-info" style="font-size: 10px">
-                            <div
-                                class="my-2 fs-10"
-                                v-for="plan in item.planList"
-                                :key="plan.id"
-                            >
-                                {{ plan.name }}
+                            <div class="txt-r txt-info" style="font-size: 10px">
+                                <div
+                                    class="my-2 fs-10"
+                                    v-for="plan in item.planList"
+                                    :key="plan.id"
+                                >
+                                    {{ plan.name }}
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div v-else class="txt-info p-4">暂无套餐消息~</div>
                 </div>
             </div>
         </div>
@@ -197,6 +202,8 @@
                         timeId = setTimeout(() => {
                             this.mealH = this.$refs.meal.clientHeight + 'px'
                         }, 1)
+                    } else {
+                        this.mealH = '30px'
                     }
                 })
             },
