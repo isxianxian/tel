@@ -14,7 +14,8 @@
                         src="../assets/img/record-bg.png"
                         style="width: 0.7rem"
                     />
-                    <span class="ml-7">通话记录</span>
+
+                    <span class="ml-7"> 通话记录</span>
                 </div>
                 <div
                     class="bg-yellow txt-white py-6 bor-rad5 flex ali-cen jus-cen"
@@ -22,10 +23,26 @@
                     @click="goPage(1)"
                 >
                     <img src="../assets/img/tel-bg.png" style="width: 0.7rem" />
-                    <span class="ml-7">亲情号</span>
+                    <div class="p-3 pr-5" @click.stop="mesVisible = true">
+                        <span class="el-icon-question txt-white fs-14"></span>
+                    </div>
+                    <span class="lh-1">亲情号</span>
                 </div>
             </div>
         </div>
+
+        <el-dialog title="信息" :visible.sync="mesVisible" width="80%" center>
+            <div class="fs-12 txt-cen">学生刷卡即可看见亲人号码！</div>
+
+            <div slot="footer" class="dialog-footer">
+                <el-button
+                    size="small"
+                    type="primary"
+                    @click="mesVisible = false"
+                    >关 闭</el-button
+                >
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -33,7 +50,9 @@
     export default {
         name: 'Home',
         data: function () {
-            return {}
+            return {
+                mesVisible: false,
+            }
         },
         components: {},
         computed: {
