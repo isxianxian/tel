@@ -2,9 +2,10 @@ import { Message } from 'element-ui';
 import axios from 'axios';
 
 // 环境的切换 if (process.env.NODE_ENV == 'development')
-axios.defaults.baseURL = 'http://localhost:3000';
+axios.defaults.baseURL = '/api';
 
 axios.defaults.timeout = 10000;
+
 
 axios.defaults.withCredentials = false;
 // 允许跨域。
@@ -15,14 +16,17 @@ axios.defaults.validateStatus = function validateStatus(status) {
   return /^(2|3)\d{2}$/.test(status);
 };
 
+
+
 axios.interceptors.request.use(
   config => {
     // 请求拦截器   
     // 每次发送请求之前判断vuex中是否存在token        
     // 如果存在，则统一在http请求的header都加上token，这样后台根据token判断你的登录情况
     // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断 
-    // const token = store.state.token;
-    // token && (config.headers.Authorization = token);
+
+    const token = localStorage.getItem('user-token');
+    token && (config.headers['Authentication'] = token);
     return config;
   },
   error => {
@@ -34,13 +38,19 @@ axios.interceptors.response.use(
   response => {
     // 如果返回的状态码以2/3开头，说明接口请求成功，可以正常拿到数据     
     // 否则的话抛出错误
-    return response.data;
+    if (response.data.code == 1) {
+      return response.data.data || response.data.message;
+    } else {
+      Message.error(response.data.message)
+    }
+
   },
   // 服务器状态码不是2/3开头的的情况
   // 这里可以跟你们的后台开发人员协商好统一的错误状态码    
   // 然后根据返回的状态码进行一些操作，例如登录过期提示，错误提示等等
   // 下面列举几个常见的操作，其他需求可自行扩展
   error => {
+    console.log(error, '44')
     if (error.response.status) {
       switch (error.response.status) {
         //   // 401: 未登录
@@ -85,13 +95,11 @@ axios.interceptors.response.use(
             content: '页面消失啦',
           });
           break;
-        //   // 其他错误，直接抛出错误提示
-        //   default:
-        //     Toast({
-        //       message: error.response.data.message,
-        //       duration: 1500,
-        //       forbidClick: true
-        //     });
+        // 其他错误，直接抛出错误提示
+        default:
+          let errMes = error.response.data.message;
+          Message.error(errMes);
+          break;
       }
       // return Promise.reject(error.response);
     }

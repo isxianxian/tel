@@ -12,7 +12,7 @@
         </div>
         <div v-else>
             <div class="label">
-                <span>考试记录（张一凡）</span>
+                <span>考试记录（{{ curStudent.name }}）</span>
             </div>
             <div class="bg-white record-box bor-rad5 mb-2">
                 <div
@@ -31,7 +31,11 @@
                         class="lh-1 txt-info fs-12 py-4 flex ali-cen"
                         :class="{ 'bor-b': index < record.length - 1 }"
                     >
-                        <div class="time fs-9">{{ item.time }}</div>
+                        <div class="time fs-9">
+                            {{
+                                $common.formatTime(item.startTime, 'yyyy/MM/dd')
+                            }}
+                        </div>
                         <div class="serve flex-1 over-hide">
                             <div
                                 class="one-elli"
@@ -40,7 +44,7 @@
                                     width: calc(100% - 20px);
                                 "
                             >
-                                {{ item.serve }}
+                                {{ item.name }}
                             </div>
                             <div
                                 class="txt-r"
@@ -61,27 +65,29 @@
         name: 'Home',
         data: function () {
             return {
-                record: [
-                    {
-                        time: '2020-9-10 11:12:00',
-                        serve: '2019-2020学期数学秋季期中考试其中考试',
-                    },
-                    {
-                        time: '2020-9-12 11:12:00',
-                        serve: '2019-2020学期***其中考试',
-                    },
-                    {
-                        time: '2020-9-21 11:12:00',
-                        serve: '2019-2020学期***其中考试',
-                    },
-                ],
+                record: [{ name: '', startTime: new Date() }],
+                curStudent: this.$store.state.curStudent,
             }
         },
         components: {},
         methods: {
             goDetail(item) {
-                this.$router.push('/detail')
+                item = JSON.stringify(item)
+                this.$router.push(`/detail?mes=${item}`)
             },
+            getScroll() {
+                let { id } = this.curStudent
+                this.$api.queryScore(id).then((res) => {
+                    this.record = res
+                })
+            },
+            formatTime(time) {
+                time = new Date(time)
+                return time
+            },
+        },
+        created() {
+            this.getScroll()
         },
     }
 </script>

@@ -4,7 +4,7 @@
         <div class="px-7">
             <div class="my-7 flex ali-cen">
                 <div class="flex-1 one-elli mr-2 fs-bold">
-                    2019-2020学期***其中考试学期***其中考试（张一凡）
+                    {{ examName }}（{{ curStudent.name }}）
                 </div>
                 <div class="pos-rel" style="width: 2.4rem">
                     <span
@@ -38,8 +38,9 @@
         name: 'Home',
         data: function () {
             return {
-                type: 0,
+                type: 0, // 选中科目的值
                 types: [
+                    // 科目列表
                     { label: '总分', value: 0 },
                     { label: '语文', value: 1 },
                     { label: '数学', value: 2 },
@@ -47,10 +48,15 @@
                     { label: '物理', value: 4 },
                 ],
                 record: [
+                    // 历史成绩列表
                     { type: '语文', count: 120 },
                     { type: '语文', count: 120 },
                     { type: '语文', count: 120 },
                 ],
+
+                examName: '',
+                subject: '',
+                curStudent: this.$store.state.curStudent,
             }
         },
         methods: {
@@ -123,9 +129,7 @@
                 }
                 return option
             },
-            changeType(item) {
-                console.log(item)
-            },
+            changeType(item) {},
         },
         components: {},
         mounted() {
@@ -136,6 +140,11 @@
                 let option = this.setBar()
                 historyChart.setOption(option)
             })
+        },
+        created() {
+            let { name, subject } = this.$route.query
+            this.examName = name
+            this.subject = subject
         },
     }
 </script>

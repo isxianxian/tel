@@ -10,11 +10,17 @@ Vue.use(ElementUI);
 import './assets/css/style.scss'
 import 'lib-flexible/flexible.js'
 
+import common from './common';
+
+Vue.prototype.$common = common;
+
 import api from './api';
 Vue.prototype.$api = api;
 
 import TopNav from './components/TopNav.vue';
+import Person from './components/Person.vue'
 Vue.component('TopNav', TopNav);
+Vue.component('Person', Person);
 
 Vue.config.productionTip = false
 

@@ -5,8 +5,11 @@
                 <img src="../assets/img/home-bg.png" width="100%" />
             </div>
             <div class="content px-7 pos-rel">
-                <div class="p-7 bor-shadow bor-rad5 bg-white">
-                    <div class="txt-cen" v-if="loginStatus == 0">
+                <div
+                    class="p-7 bor-shadow bor-rad5 bg-white txt-cen"
+                    v-if="loginStatus == 0"
+                >
+                    <div>
                         <p class="txt-tit fs-bold lh-2" style="font-size: 16px">
                             登录
                         </p>
@@ -14,7 +17,13 @@
                             对不起，您还未登录
                         </p>
                     </div>
-                    <div class="flex ali-cen" v-else-if="loginStatus == 1">
+                </div>
+
+                <div
+                    class="p-7 bor-shadow bor-rad5 bg-white"
+                    v-else-if="loginStatus == 1"
+                >
+                    <div class="flex ali-cen">
                         <div class="txt-cen">
                             <img
                                 src="../assets/img/avator.png"
@@ -22,28 +31,42 @@
                             />
                         </div>
                         <div class="fs-12 txt-info pl-7">
-                            <p class="fs-16 fs-bold txt-tit">{{ user.name }}</p>
                             <p>对不起，您还未绑定学生卡！</p>
                         </div>
                     </div>
-                    <div class="flex" v-else>
-                        <div class="flex flex-col jus-between txt-cen">
+                </div>
+
+                <div v-else>
+                    <div
+                        class="my-4"
+                        v-for="(item, index) in allStudents"
+                        :key="item.id"
+                        @click="selectStudent(item, index)"
+                    >
+                        <!-- <div class="flex flex-col jus-between txt-cen">
                             <img
                                 src="../assets/img/avator.png"
                                 style="width: 1.35rem; height: 1.35rem"
                             />
                             <p class="fs-16 fs-bold txt-tit lh-1.5">
-                                {{ user.name }}
+                                {{ item.name }}
                             </p>
                         </div>
                         <div class="fs-12 txt-info pl-7">
-                            <p class="lh-2">班级：{{ user.grade }}</p>
-                            <p class="lh-2">学校：{{ user.school }}</p>
-                            <p class="lh-2">学号：{{ user.schoolNum }}</p>
-                            <p class="lh-2">一卡通号：{{ user.cardNum }}</p>
-                        </div>
+                            <p class="lh-2">班级：{{ item.grade }}</p>
+                            <p class="lh-2">
+                                学校：{{ getSchool(item.schoolId) }}
+                            </p>
+                            <p class="lh-2">学号：{{ item.studentNumber }}</p>
+                            <p class="lh-2">一卡通号：{{ item.cardId }}</p>
+                        </div> -->
+                        <Person
+                            :student="item"
+                            :isActive="activeIndex == index"
+                        />
                     </div>
                 </div>
+
                 <div
                     class="txt-cen txt-info my-5 add bor-rad5"
                     @click="bindStudent"
@@ -60,25 +83,83 @@
 </template>
 
 <script>
+    import { mapState, mapMutations } from 'vuex'
+
     export default {
         name: 'Home',
         data: function () {
             return {
+                num: 2,
+                activeIndex: NaN,
                 loginStatus: 2, // 登陆状态：0，未登录，1，登陆未绑定，2，已绑定
-                user: {
-                    name: '张三',
-                    grade: '高一（3）班',
-                    school: '解放中学（03541）',
-                    schoolNum: '203003652',
-                    cardNum: '8038114444',
-                },
             }
         },
-        components: {},
         methods: {
+            ...mapMutations([
+                'loginState',
+                'saveSchools',
+                'saveAllStudens',
+                'saveCurStudent',
+            ]),
+            selectStudent(student, index) {
+                this.saveCurStudent(student)
+                this.activeIndex = index
+            },
             bindStudent() {
                 this.$router.push('/bind')
             },
+            userLogin(id) {
+                return this.$api.login(id).then((res) => {
+                    if (res) {
+                        this.loginState(true)
+                        localStorage.setItem('user-token', res)
+                        return '1'
+                    }
+                })
+            },
+            getAllStudents() {
+                this.$api.allStudents().then((res) => {
+                    if (res && res.length > 0) {
+                        this.loginStatus == 2
+                        this.studens = res
+                        this.saveAllStudens(res)
+                    } else {
+                        this.loginStatus == 1
+                    }
+                })
+            },
+            getAllSchools() {
+                this.$api.allSchool().then((res) => {
+                    this.saveSchools(res)
+                })
+            },
+            getSchool(id) {
+                let school = this.schools.filter((item) => item.id == id)
+                if (school.length > 0) {
+                    return school[0].name
+                } else {
+                    return ''
+                }
+            },
+        },
+        computed: {
+            ...mapState(['hasLogin', 'schools', 'allStudents', 'curStudent']),
+        },
+        created() {
+            let openId = 123
+            if (!this.hasLogin) {
+                this.userLogin(openId).then((res) => {
+                    this.getAllStudents()
+                    this.getAllSchools()
+                })
+            }
+
+            if (this.curStudent) {
+                let { id: curId } = this.curStudent
+                this.activeIndex = this.allStudents.findIndex(
+                    (item) => item.id == curId
+                )
+            }
         },
     }
 </script>

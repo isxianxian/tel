@@ -4,7 +4,10 @@
         <div class="main">
             <router-view></router-view>
         </div>
-        <div class="bottom-nav flex txt-cen txt-border bor-t">
+        <div
+            class="bottom-nav flex txt-cen txt-border bor-t"
+            v-show="hasCurStudent"
+        >
             <div
                 class="flex-1"
                 :class="[tabIndex == 0 ? 'active txt-primary' : '']"
@@ -50,6 +53,8 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+
     export default {
         name: 'Home',
         data: function () {
@@ -71,7 +76,9 @@
                 this.$router.push(obj[index])
             },
         },
-        components: {},
+        computed: {
+            ...mapState(['hasCurStudent']),
+        },
         created() {
             let { path } = this.$route,
                 obj = {

@@ -11,11 +11,13 @@
             return {}
         },
         methods: {},
-        created() {
-            console.log('获取用户信息存储到vuex中 ， 判断用户状态')
-        },
+        created() {},
     }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+    #app {
+        overflow-y: scroll;
+    }
 </style>
+

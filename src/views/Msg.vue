@@ -1,6 +1,6 @@
 <template>
-    <div class="h-100 bg-gray">
-        <div class="px-7 py-5">
+    <div class="h-100 bg-gray over-scroll" ref="box">
+        <div class="px-7 py-5" ref="content">
             <div>
                 <el-input
                     type="textarea"
@@ -13,19 +13,27 @@
             <div
                 class="bg-green bor-rad5 txt-cen fs-12 txt-white my-4"
                 style="height: 1rem; line-height: 1rem"
+                @click="pushMes"
             >
                 推送
             </div>
             <div>
-                <div class="label"><span>消息记录（张一凡）</span></div>
-                <div
-                    class="p-6 bg-white mb-6 bor-rad5"
-                    v-for="(item, index) in msgList"
-                    :key="index"
-                >
-                    <div class="txt-primary mb-4">{{ item.time }}</div>
-                    <div>{{ item.content }}</div>
+                <div class="label">
+                    <span>消息记录（{{ curStudent.name }}）</span>
                 </div>
+                <div v-if="msgList.length">
+                    <div
+                        class="p-6 bg-white mb-6 bor-rad5"
+                        v-for="(item, index) in msgList"
+                        :key="index"
+                    >
+                        <div class="txt-primary mb-4">
+                            {{ item.createTime }}
+                        </div>
+                        <div>{{ item.content }}</div>
+                    </div>
+                </div>
+                <div v-else class="txt-info ml-4">暂无消息~</div>
             </div>
         </div>
     </div>
@@ -37,26 +45,74 @@
         data: function () {
             return {
                 content: '',
-                msgList: [
-                    {
-                        time: '2020/10/19',
-                        content:
-                            '“我走了；到那边来信！”我望着他走出去。他走了几步，回过头看见我，说，“进去吧，里边没人。”等他的背影混入来来往往的人里，再找不着了，我便进来坐下，我的眼泪又来了',
-                    },
-                    {
-                        time: '2020/10/19',
-                        content:
-                            '“我走了；到那边来信！”我望着他走出去。他走了几步，回过头看见我，说，“进去吧，里边没人。”等他的背影混入来来往往的人里，再找不着了，我便进来坐下，我的眼泪又来了',
-                    },
-                    {
-                        time: '2020/10/19',
-                        content:
-                            '“我走了；到那边来信！”我望着他走出去。他走了几步，回过头看见我，说，“进去吧，里边没人。”等他的背影混入来来往往的人里，再找不着了，我便进来坐下，我的眼泪又来了',
-                    },
-                ],
+                hasMsg: true,
+                pageNum: 1,
+                msgList: [],
+                curStudent: this.$store.state.curStudent,
             }
         },
+        methods: {
+            getMes(isPush) {
+                let {
+                    curStudent: { id },
+                    pageNum,
+                } = this
+                this.$api
+                    .getMes({ pageNum, pageSize: 10, studentId: id })
+                    .then((res) => {
+                        if (res) {
+                            isPush
+                                ? (this.msgList = res)
+                                : this.msgList.push(...res)
+                            this.pageNum += 1
+                        }
+                        this.hasMsg = res.length ? true : false
+                    })
+            },
+            pushMes() {
+                let {
+                    curStudent: { id },
+                    content,
+                } = this
+
+                if (!content) {
+                    this.$message.error('消息不能为空！')
+                    return
+                }
+
+                this.$api.pushMes({ studentId: id, content }).then((res) => {
+                    if (res) {
+                        this.$message.success(res)
+                        this.content = ''
+                        this.pageNum = 1
+                        this.getMes(true)
+                    }
+                })
+            },
+            scrollRefresh() {
+                // 滚动刷新
+            },
+        },
         components: {},
+        created() {
+            this.getMes()
+        },
+        mounted() {
+            this.$nextTick(() => {
+                let _this = this,
+                    boxEle = this.$refs.box,
+                    contentEle = this.$refs.content
+                boxEle.onscroll = function () {
+                    let boxH = boxEle.clientHeight,
+                        contentH = contentEle.offsetHeight,
+                        scrollH = boxEle.scrollTop
+                    if (boxH + scrollH >= contentH - 10 && _this.hasMsg) {
+                        _this.hasMsg = false
+                        _this.getMes()
+                    }
+                }
+            })
+        },
     }
 </script>
 

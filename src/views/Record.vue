@@ -3,7 +3,7 @@
         <TopNav tit="通话记录" :back="true" />
         <div class="px-7">
             <div class="label">
-                <span>通话记录（张一凡）</span>
+                <span>通话记录（{{ curStudent.name }}）</span>
             </div>
             <div class="bg-white record-box bor-rad5">
                 <div
@@ -35,6 +35,7 @@
         name: 'Home',
         data: function () {
             return {
+                curStudent: this.$store.state.curStudent,
                 record: [
                     {
                         time: '2020-9-10 11:12:00',
