@@ -18,7 +18,7 @@
 
 @each $name, $size in $font-size {
   .fs-#{$name} {
-    font-size: $size; /* no */
+    font-size: $size;
   }
 }
 
@@ -91,7 +91,7 @@
   @return map-get($color, $name);
 }
 
-// 通用函数片段
+// 通用样式片段
 .w-100 {
   width: 100%;
 }

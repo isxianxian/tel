@@ -11,7 +11,17 @@
             return {}
         },
         methods: {},
-        created() {},
+        created() {
+            let { page } = this.$route.query
+            let goPayPage = page == 'pay' ? 1 : 0
+
+            if (window.name == '') {
+                localStorage.clear()
+                localStorage.setItem('goPayPage', goPayPage)
+                window.name = 'isFirstVisit'
+            } else if (window.name == 'isFirstVisit') {
+            }
+        },
     }
 </script>
 

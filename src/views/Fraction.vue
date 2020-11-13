@@ -1,7 +1,7 @@
 <template>
     <div class="h-100 bg-gray px-7 over-scroll pos-rel">
         <div
-            v-if="!record.length"
+            v-if="!scoreList.length"
             class="pos-abs w-100"
             style="left: 0; right: 0; bottom: 3rem"
         >
@@ -23,13 +23,13 @@
                 </div>
                 <div
                     class="px-6"
-                    v-for="(item, index) in record"
+                    v-for="(item, index) in scoreList"
                     :key="index"
                     @click="goDetail(item)"
                 >
                     <div
                         class="lh-1 txt-info fs-12 py-4 flex ali-cen"
-                        :class="{ 'bor-b': index < record.length - 1 }"
+                        :class="{ 'bor-b': index < scoreList.length - 1 }"
                     >
                         <div class="time fs-9">
                             {{
@@ -61,33 +61,35 @@
 </template>
 
 <script>
+    import { mapState, mapMutations } from 'vuex'
     export default {
         name: 'Home',
         data: function () {
             return {
-                record: [{ name: '', startTime: new Date() }],
-                curStudent: this.$store.state.curStudent,
+                curStudent: JSON.parse(localStorage.getItem('curStudent')),
+                record: [],
             }
         },
-        components: {},
+        computed: {
+            ...mapState(['getScore', 'scoreList']),
+        },
         methods: {
+            ...mapMutations(['saveScore']),
             goDetail(item) {
                 item = JSON.stringify(item)
                 this.$router.push(`/detail?mes=${item}`)
             },
-            getScroll() {
+            getScoreList() {
                 let { id } = this.curStudent
                 this.$api.queryScore(id).then((res) => {
-                    this.record = res
+                    this.saveScore(res)
                 })
-            },
-            formatTime(time) {
-                time = new Date(time)
-                return time
             },
         },
         created() {
-            this.getScroll()
+            if (!this.getScore) {
+                this.getScoreList()
+            }
         },
     }
 </script>

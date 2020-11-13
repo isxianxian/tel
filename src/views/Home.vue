@@ -71,7 +71,7 @@
                     class="txt-cen txt-info my-5 add bor-rad5"
                     @click="bindStudent"
                 >
-                    <span class="icon el-icon-plus mr-5 fs-bold"></span>
+                    <span class="icon-add bg mr-3"></span>
                     <span> 绑定学生卡</span>
                 </div>
             </div>
@@ -91,6 +91,7 @@
             return {
                 num: 2,
                 activeIndex: NaN,
+                curStudent: {},
                 loginStatus: 2, // 登陆状态：0，未登录，1，登陆未绑定，2，已绑定
             }
         },
@@ -104,33 +105,34 @@
             selectStudent(student, index) {
                 this.saveCurStudent(student)
                 this.activeIndex = index
+                this.$router.push('/tel')
+                this.$emit('changeCur', true)
             },
             bindStudent() {
                 this.$router.push('/bind')
             },
-            userLogin(id) {
-                return this.$api.login(id).then((res) => {
-                    if (res) {
-                        this.loginState(true)
-                        localStorage.setItem('user-token', res)
-                        return '1'
-                    }
-                })
-            },
+
             getAllStudents() {
                 this.$api.allStudents().then((res) => {
                     if (res && res.length > 0) {
-                        this.loginStatus == 2
+                        this.loginStatus = 2
                         this.studens = res
                         this.saveAllStudens(res)
+                        if (this.curStudent) {
+                            let { id: curId } = this.curStudent
+                            this.activeIndex = this.allStudents.findIndex(
+                                (item) => item.id == curId
+                            )
+                        }
                     } else {
-                        this.loginStatus == 1
+                        this.loginStatus = 1
                     }
                 })
             },
             getAllSchools() {
                 this.$api.allSchool().then((res) => {
                     this.saveSchools(res)
+                    this.getAllStudents()
                 })
             },
             getSchool(id) {
@@ -143,18 +145,19 @@
             },
         },
         computed: {
-            ...mapState(['hasLogin', 'schools', 'allStudents', 'curStudent']),
+            ...mapState(['schools', 'allStudents']),
         },
         created() {
-            let openId = 123
-            if (!this.hasLogin) {
-                this.userLogin(openId).then((res) => {
-                    this.getAllStudents()
-                    this.getAllSchools()
-                })
+            this.curStudent = JSON.parse(localStorage.getItem('curStudent'))
+            let token = localStorage.getItem('user-token')
+            if (!token) {
+                return
             }
-
-            if (this.curStudent) {
+            if (!this.schools.length) {
+                this.getAllSchools()
+            } else if (!this.allStudents.length) {
+                this.getAllStudents()
+            } else if (this.curStudent) {
                 let { id: curId } = this.curStudent
                 this.activeIndex = this.allStudents.findIndex(
                     (item) => item.id == curId
@@ -177,6 +180,12 @@
             height: 98px;
             line-height: 98px;
             border: 2px dotted #cccccc;
+            .icon-add {
+                display: inline-block;
+                width: 22px;
+                height: 20px;
+                background-image: url('../assets/img/icon-add.png');
+            }
         }
         .bill-box {
             width: 120px;

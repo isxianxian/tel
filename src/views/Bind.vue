@@ -41,9 +41,9 @@
             <div v-for="item in students" :key="item.id">
                 <Person :student="item">
                     <template v-slot:btn>
-                        <div class="ml-8">
+                        <div>
                             <span
-                                class="px-4 py-3 bg-primary bor-rad5 txt-white ml-8"
+                                class="px-4 py-3 bg-primary bor-rad5 txt-white"
                                 @click="bindStudent(item)"
                                 >绑定学生</span
                             >
@@ -71,15 +71,12 @@
                 </div>
                 <div class="flex ali-cen mb-6 txt-r">
                     <div
-                        class="mr-4"
-                        style="width: 2.2rem"
+                        class="mr-4 flex ali-cen"
+                        style="width: 2.5rem"
                         @click="mesVisible = true"
                     >
-                        <span>电子学生证</span>
-                        <span
-                            class="el-icon-question txt-primary fs-14 mx-1"
-                            style="vertical-align: middle"
-                        ></span>
+                        <div class="lh-1">电子学生证</div>
+                        <div class="que-icon bg"></div>
                     </div>
                     <el-input
                         class="flex-1"
@@ -99,7 +96,10 @@
         </el-dialog>
 
         <el-dialog title="信息" :visible.sync="mesVisible" width="80%" center>
-            <div class="fs-12 txt-cen">电子学生证号见电话卡的编号</div>
+            <div class="fs-12 txt-cen">电子学生证号如图所示</div>
+            <div class="txt-cen">
+                <img src="../assets/img/card.png" style="width: 50%" />
+            </div>
 
             <div slot="footer" class="dialog-footer">
                 <el-button
@@ -122,7 +122,7 @@
                 students: [],
                 studentForm: {},
                 bindStudentId: 0,
-                schools: this.$store.state.schools,
+                schools: JSON.parse(localStorage.getItem('schools')),
                 // token: localStorage.getItem('user-token'),
                 bindVisible: false,
                 mesVisible: false,
@@ -173,11 +173,19 @@
                     .then((res) => {
                         if (res) {
                             this.$message.success('绑定成功！')
+                            this.getBindStudents()
                         }
                         this.bindVisible = false
                         this.studentForm.studentNumber = ''
                         this.studentForm.cardId = ''
                     })
+            },
+            getBindStudents() {
+                this.$api.allStudents().then((res) => {
+                    if (res && res.length > 0) {
+                        this.$store.commit('saveAllStudens', res)
+                    }
+                })
             },
         },
     }
@@ -193,5 +201,8 @@
             height: 68px;
             line-height: 68px;
         }
+    }
+    .que-icon {
+        background-image: url('../assets/img/que1.png');
     }
 </style>

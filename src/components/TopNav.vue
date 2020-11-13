@@ -1,7 +1,11 @@
 <template>
     <div class="top-nav bg-primary txt-cen pos-rel txt-white fs-14">
-        <div v-if="back" class="back-icon" @click="backPage">
-            <div class="el-icon-arrow-left icon"></div>
+        <div
+            v-if="back"
+            class="back-icon flex ali-cen jus-cen"
+            @click="backPage"
+        >
+            <div class="icon-back bg"></div>
         </div>
         <div>
             {{ tit }}
@@ -23,5 +27,13 @@
         },
     }
 </script>
+
+<style lang="scss" scoped>
+    .icon-back {
+        width: 18px;
+        height: 30px;
+        background-image: url('../assets/img/back.png');
+    }
+</style>
 
 

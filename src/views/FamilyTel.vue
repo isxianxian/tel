@@ -44,7 +44,7 @@
             </div>
             <div
                 class="bg-yellow txt-white bor-rad5 txt-cen py-4 mt-7 mb-2"
-                @click="addVisible = true"
+                @click="judgeAdd"
             >
                 添加亲情号
             </div>
@@ -60,12 +60,16 @@
                     <el-input
                         v-model="addForm.title"
                         autocomplete="off"
+                        maxlength="2"
+                        show-word-limit
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="手机号" label-width="1.5rem">
                     <el-input
                         v-model="addForm.phone"
                         autocomplete="off"
+                        maxlength="15"
+                        show-word-limit
                     ></el-input>
                 </el-form-item>
             </el-form>
@@ -81,7 +85,7 @@
 
         <el-dialog title="删除" :visible.sync="delVisible" width="80%" center>
             <div class="txt-cen">
-                <span class="el-icon-delete del-icon"></span>
+                <div class="del-icon bg m-auto"></div>
                 <p class="fs-12 txt-info">是否删除该亲情号！</p>
             </div>
             <div slot="footer" class="dialog-footer">
@@ -101,20 +105,34 @@
         name: 'Home',
         data: function () {
             return {
-                curStudent: this.$store.state.curStudent,
+                curStudent: JSON.parse(localStorage.getItem('curStudent')),
                 addVisible: false,
                 delVisible: false,
                 delGuardianId: '',
                 addForm: {},
-                record: [{}],
+                record: [],
             }
         },
         components: {},
         methods: {
+            limitWord() {
+                let title = this.addForm.title
+                if (title.length > 2) {
+                    this.addForm.title = title.slice(0, 2)
+                    this.$message.error('身份最多只能两个字！')
+                }
+            },
             getFamilyNum(params) {
                 this.$api.allFamilyNum(params).then((res) => {
                     this.record = res
                 })
+            },
+            judgeAdd() {
+                if (this.record.length >= 5) {
+                    this.$message.error('亲情号最多只能5个！')
+                    return
+                }
+                this.addVisible = true
             },
             addTel() {
                 let params = {
@@ -142,7 +160,6 @@
         },
         created() {
             let studentId = this.curStudent.id
-            // studentId = 212
             this.getFamilyNum({ studentId })
         },
     }
@@ -161,6 +178,12 @@
             font-size: 12px;
         }
     }
+
+    .del-icon {
+        width: 180px;
+        height: 180px;
+        background-image: url('../assets/img/del.png');
+    }
 </style>
 <style lang="scss" >
     .el-dialog__header .el-dialog__title {
@@ -178,11 +201,6 @@
         }
         .el-form-item {
             margin-bottom: 20px;
-        }
-        .del-icon {
-            font-size: 40px; /*no */
-            color: #e76464;
-            margin-bottom: 38px;
         }
     }
 </style>

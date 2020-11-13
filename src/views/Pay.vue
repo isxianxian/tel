@@ -1,6 +1,6 @@
 <template>
     <div class="h-100">
-        <TopNav tit="帮人代付" :back="true" />
+        <TopNav tit="帮人代付" :back="back" />
         <div class="bg-gray px-7">
             <div>
                 <div class="label">
@@ -54,9 +54,9 @@
                 <div v-for="item in students" :key="item.id">
                     <Person :student="item">
                         <template v-slot:btn>
-                            <div class="ml-8">
+                            <div>
                                 <span
-                                    class="px-4 ml-8 py-3 bg-orange bor-rad5 txt-white"
+                                    class="px-4 ml-3 py-3 bg-orange bor-rad5 txt-white"
                                     @click="pay(item)"
                                     >购买服务</span
                                 >
@@ -70,7 +70,11 @@
                 <div class="label">
                     <span>代付记录</span>
                 </div>
-                <div class="bg-white pay-box bor-rad5 mb-2 txt-cen">
+                <div v-if="payList.length == 0" class="pt-8 pb-4">
+                    <img src="../assets/img/empty-bg.png" width="100%" />
+                    <p class="txt-info txt-cen">空空如也，暂无代付记录~</p>
+                </div>
+                <div class="bg-white pay-box bor-rad5 mb-2 txt-cen" v-else>
                     <div
                         class="bg-primary lh-1 txt-white fs-12 px-6 py-4 flex record-tit"
                     >
@@ -89,10 +93,24 @@
                             class="lh-1 txt-info py-4 flex ali-cen"
                             :class="{ 'bor-b': index < payList.length - 1 }"
                         >
-                            <div class="time">{{ item.time }}</div>
-                            <div class="time">{{ item.name }}</div>
-                            <div class="time">{{ item.money }}</div>
-                            <div class="serve flex-1">{{ item.serve }}</div>
+                            <div class="time">{{ item.createTime }}</div>
+                            <div class="time">{{ item.studentName }}</div>
+                            <div class="time">
+                                <p
+                                    v-for="(detail, detailI) in item.detail"
+                                    :key="detailI"
+                                >
+                                    {{ detail.price }}元
+                                </p>
+                            </div>
+                            <div class="serve flex-1">
+                                <p
+                                    v-for="(detail, detailI) in item.detail"
+                                    :key="detailI"
+                                >
+                                    {{ detail.moduleName }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -100,7 +118,7 @@
         </div>
 
         <el-dialog title="信息" :visible.sync="mesVisible" width="80%" center>
-            <div class="fs-12 txt-cen">电子学生证号见电话卡的编号</div>
+            <div class="txt-cen">电子学生证号见电话卡的编号</div>
 
             <div slot="footer" class="dialog-footer">
                 <el-button
@@ -115,11 +133,13 @@
 </template>
 
 <script>
+    import { mapState, mapMutations } from 'vuex'
     export default {
         name: 'Home',
         data: function () {
             return {
-                schools: this.$store.state.schools,
+                curStudent: JSON.parse(localStorage.getItem('curStudent')),
+                schools: JSON.parse(localStorage.getItem('schools')),
                 searchForm: {
                     name: '',
                     studentNumber: '',
@@ -127,30 +147,12 @@
                 },
                 students: [],
                 mesVisible: false,
-                payList: [
-                    // 代付记录
-                    {
-                        time: '2020-9-10 11:12:00',
-                        name: '张一凡',
-                        money: '120元',
-                        serve: '亲情话机',
-                    },
-                    {
-                        time: '2020-9-10 11:12:00',
-                        name: '张一凡',
-                        money: '120元',
-                        serve: '亲情话机',
-                    },
-                    {
-                        time: '2020-9-10 11:12:00',
-                        name: '张一凡',
-                        money: '120元',
-                        serve: '亲情话机',
-                    },
-                ],
+                payList: [],
+                back: true,
             }
         },
         methods: {
+            ...mapMutations(['loginState', 'saveSchools']),
             searchStudent() {
                 let { schoolId, name, studentNumber } = this.searchForm
                 if (!(schoolId && name && studentNumber)) {
@@ -170,10 +172,36 @@
             },
 
             pay(item) {
-              this.$router.push(`/setMeal?studentId=${item.id}`)
+                this.$router.push(`/setMeal?studentId=${item.id}`)
+            },
+            payRecord() {
+                let params = { payType: 'other', studentId: 0 }
+                this.$api.payRecords(params).then((res) => {
+                    console.log(res, '179')
+                    if (res.length > 0) {
+                        res.forEach(
+                            (item) => (item.detail = JSON.parse(item.detail))
+                        )
+                    }
+                    this.payList = res
+                })
+            },
+
+            getAllSchools() {
+                this.$api.allSchool().then((res) => {
+                    this.schools = res
+                })
             },
         },
         components: {},
+        created() {
+            let { back } = this.$route.query
+            this.back = !Boolean(back)
+            let curStudent = localStorage.getItem('curStudent')
+            this.hasCurStudent = curStudent ? true : false
+            this.payRecord()
+            this.getAllSchools()
+        },
     }
 </script>
 

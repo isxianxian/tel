@@ -5,7 +5,11 @@
             <div class="label">
                 <span>通话记录（{{ curStudent.name }}）</span>
             </div>
-            <div class="bg-white record-box bor-rad5">
+            <div v-if="record.length == 0" class="py-8">
+                <img src="../assets/img/empty-bg.png" width="100%" />
+                <p class="txt-info txt-cen">暂无通话记录~</p>
+            </div>
+            <div v-else class="bg-white record-box bor-rad5">
                 <div
                     class="bg-primary lh-1 txt-white fs-12 px-6 py-4 flex txt-cen record-tit"
                 >
@@ -18,10 +22,12 @@
                         class="lh-1 txt-info fs-12 py-4 flex ali-cen txt-cen"
                         :class="{ 'bor-b': index < record.length - 1 }"
                     >
-                        <div class="time fs-9">{{ item.time }}</div>
-                        <div class="duration">{{ item.duration }}元</div>
+                        <div class="time fs-9">{{ item.startTime }}</div>
+                        <div class="duration">
+                            {{ item.calledDuration }}分钟
+                        </div>
                         <div class="num flex-1">
-                            {{ item.num }}
+                            {{ item.otherParty }}
                         </div>
                     </div>
                 </div>
@@ -35,27 +41,21 @@
         name: 'Home',
         data: function () {
             return {
-                curStudent: this.$store.state.curStudent,
-                record: [
-                    {
-                        time: '2020-9-10 11:12:00',
-                        duration: '45s',
-                        num: '13912345678',
-                    },
-                    {
-                        time: '2020-9-10 11:12:00',
-                        duration: '45s',
-                        num: '13912345678',
-                    },
-                    {
-                        time: '2020-9-10 11:12:00',
-                        duration: '45s',
-                        num: '13912345678',
-                    },
-                ],
+                curStudent: JSON.parse(localStorage.getItem('curStudent')),
+                record: [],
             }
         },
-        components: {},
+        methods: {
+            getTelRecord() {
+                let id = this.curStudent.id
+                this.$api.telRecords(id).then((res) => {
+                    this.record = res
+                })
+            },
+        },
+        created() {
+            this.getTelRecord()
+        },
     }
 </script>
 

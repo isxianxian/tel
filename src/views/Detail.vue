@@ -9,7 +9,7 @@
                 <div
                     class="bg-primary lh-1 txt-white fs-12 px-7 py-5 flex txt-cen record-tit"
                 >
-                    <div class="name fs-9">总分</div>
+                    <div class="name">总分</div>
                     <div class="score">
                         {{ totalScore.score }}/{{ totalScore.total }}
                     </div>
@@ -60,15 +60,16 @@
                 mes: {},
                 totalScore: {},
                 scoreList: [],
-                curStudent: this.$store.state.curStudent,
+                curStudent: JSON.parse(localStorage.getItem('curStudent')),
             }
         },
         methods: {
             goHistory(item) {
+                console.log(item)
                 let {
                         mes: { name },
                     } = this,
-                    { name: subject } = item
+                    { sign: subject } = item
                 this.$router.push({
                     path: '/history',
                     query: {
@@ -81,50 +82,44 @@
                 let tempObj = {
                         chinese: {
                             name: '语文',
-                            total: 150,
                         },
                         mathematics: {
                             name: '数学',
-                            total: 150,
                         },
                         english: {
                             name: '英语',
-                            total: 150,
                         },
                         geography: {
                             name: '地理',
-                            total: 100,
                         },
                         history: {
                             name: '历史',
-                            total: 100,
                         },
                         politics: {
                             name: '政治',
-                            total: 100,
                         },
                         biology: {
                             name: '生物',
-                            total: 100,
                         },
                         chemistry: {
                             name: '化学',
-                            total: 100,
                         },
                         physics: {
                             name: '物理',
-                            total: 100,
                         },
                         total: {
                             name: '总分',
-                            total: 750,
                         },
                     },
                     tempArr = []
 
                 for (let attr in mes) {
                     if (tempObj.hasOwnProperty(attr)) {
+                        let totalName =
+                            attr == 'total' ? 'totalScore' : attr + 'TotalScore'
                         tempObj[attr].score = mes[attr]
+                        tempObj[attr].total = mes[totalName]
+                        tempObj[attr].sign = attr
                         tempArr.push(tempObj[attr])
                     }
                 }
@@ -132,6 +127,7 @@
                 let totalIndex = tempArr.findIndex((item) => item.name == '总分'),
                     totalItem = tempArr.splice(totalIndex, 1)
                 this.totalScore = totalItem[0]
+
                 return tempArr
             },
         },

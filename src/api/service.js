@@ -1,8 +1,14 @@
-import { Message } from 'element-ui';
+import { Message, Loading } from 'element-ui';
 import axios from 'axios';
+let showLoad = null;
 
-// 环境的切换 if (process.env.NODE_ENV == 'development')
-axios.defaults.baseURL = '/api';
+// 环境的切换 
+if (process.env.NODE_ENV == 'development') {
+  axios.defaults.baseURL = '/api';
+} else {
+  axios.defaults.baseURL = 'https://yuncoding.cn';
+}
+
 
 axios.defaults.timeout = 10000;
 
@@ -27,6 +33,12 @@ axios.interceptors.request.use(
 
     const token = localStorage.getItem('user-token');
     token && (config.headers['Authentication'] = token);
+    showLoad = Loading.service({
+      lock: true,
+      text: '拼命加载中',
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.5)'
+    });
     return config;
   },
   error => {
@@ -36,6 +48,7 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   response => {
+    showLoad.close();
     // 如果返回的状态码以2/3开头，说明接口请求成功，可以正常拿到数据     
     // 否则的话抛出错误
     if (response.data.code == 1) {
@@ -50,6 +63,7 @@ axios.interceptors.response.use(
   // 然后根据返回的状态码进行一些操作，例如登录过期提示，错误提示等等
   // 下面列举几个常见的操作，其他需求可自行扩展
   error => {
+    showLoad.close();
     console.log(error, '44')
     if (error.response.status) {
       switch (error.response.status) {

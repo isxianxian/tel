@@ -18,6 +18,25 @@ module.exports = {
     config.resolve.alias
       .set('vue$', 'vue/dist/vue.esm.js')
       .set('@', path.resolve(__dirname, './src'))
+
+    // 移除 preload 插件
+    config.plugins.delete('preload')
+    // 移除 prefetch 插件
+    config.plugins.delete('prefetch')
+
+    config
+      .module
+      .rule("images")
+      .test(/\.(jpe?g|png|gif)$/i)
+      .use("url-loader")
+      .loader("url-loader")
+      .options({
+        limit: 10000,
+        publicPath: process.env.NODE_ENV === 'production' ? 'https://songsutiku-bucket.oss-cn-hangzhou.aliyuncs.com/yunxue/img' : '',
+        outputPath: 'img',
+        name: '[name].[ext]'
+      })
+      .end()
   },
   configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
@@ -35,7 +54,11 @@ module.exports = {
     // 是否开启 CSS source maps
     sourceMap: false,
     // css预设器配置项
-    loaderOptions: {},
+    loaderOptions: {
+      sass: {
+        sassOptions: { outputStyle: 'expanded' }
+      }
+    },
     // 是否启用 CSS modules for all css / pre-processor files.
     modules: false
   },
@@ -49,6 +72,7 @@ module.exports = {
     host: 'localhost',
     port: 8080,
     https: false,
+    hot: true,
     hotOnly: false,
     // http 代理配置
     proxy: {
@@ -60,9 +84,6 @@ module.exports = {
         }
       }
     },
-    before: (app) => {
-      console.log(app, '64')
-    }
   },
   // 第三方插件配置
   pluginOptions: {

@@ -3,8 +3,8 @@ import Qs from 'qs';
 
 export default {
   // 登陆
-  login(id) {
-    return post('/user/login', Qs.stringify({ openId: id }));
+  login(code) {
+    return post('/user/login', Qs.stringify({ code }));
   },
   // 获取所有学校
   allSchool() {
@@ -54,4 +54,18 @@ export default {
   planUsed(studentId) {
     return get('/plan/used', { studentId })
   },
+  pay(params) {
+    return post('/order/plan', Qs.stringify(params))
+  },
+  judgeOrder(orderId) {
+    return get('/order/query', { orderId })
+  },
+  // 付款记录
+  payRecords(params) {
+    return get('/order/record', params)
+  },
+  // 通话记录
+  telRecords(studentId) {
+    return get('/call', { studentId })
+  }
 }

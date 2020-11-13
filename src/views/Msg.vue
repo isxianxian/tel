@@ -21,7 +21,7 @@
                 <div class="label">
                     <span>消息记录（{{ curStudent.name }}）</span>
                 </div>
-                <div v-if="msgList.length">
+                <div v-if="msgs.length">
                     <div
                         class="p-6 bg-white mb-6 bor-rad5"
                         v-for="(item, index) in msgList"
@@ -40,6 +40,8 @@
 </template>
 
 <script>
+    import { mapState, mapMutations } from 'vuex'
+
     export default {
         name: 'Home',
         data: function () {
@@ -48,25 +50,34 @@
                 hasMsg: true,
                 pageNum: 1,
                 msgList: [],
-                curStudent: this.$store.state.curStudent,
+                curStudent: JSON.parse(localStorage.getItem('curStudent')),
             }
         },
         methods: {
+            ...mapMutations(['saveMsgs']),
             getMes(isPush) {
                 let {
-                    curStudent: { id },
-                    pageNum,
-                } = this
+                        curStudent: { id },
+                        pageNum,
+                    } = this,
+                    msgs = [],
+                    msgList = [...this.msgList]
+
                 this.$api
                     .getMes({ pageNum, pageSize: 10, studentId: id })
                     .then((res) => {
                         if (res) {
-                            isPush
-                                ? (this.msgList = res)
-                                : this.msgList.push(...res)
+                            if (isPush) {
+                                msgs = res
+                                msgList = res
+                                this.saveMsgs(msgs)
+                            } else {
+                                msgList.push(...res)
+                            }
                             this.pageNum += 1
+                            this.msgList = msgList
                         }
-                        this.hasMsg = res.length ? true : false
+                        this.hasMsg = res && res.length ? true : false
                     })
             },
             pushMes() {
@@ -89,13 +100,17 @@
                     }
                 })
             },
-            scrollRefresh() {
-                // 滚动刷新
-            },
         },
-        components: {},
+        computed: {
+            ...mapState(['getMsgs', 'msgs']),
+        },
         created() {
-            this.getMes()
+            if (!this.getMsgs) {
+                this.getMes(true)
+            } else {
+                this.pageNum = 2
+                this.msgList = [...this.msgs]
+            }
         },
         mounted() {
             this.$nextTick(() => {

@@ -22,10 +22,17 @@
                     style="width: 48%"
                     @click="goPage(1)"
                 >
-                    <img src="../assets/img/tel-bg.png" style="width: 0.7rem" />
-                    <div class="p-3 pr-5" @click.stop="mesVisible = true">
-                        <span class="el-icon-question txt-white fs-14"></span>
+                    <div class="flex ali-cen">
+                        <img
+                            src="../assets/img/tel-bg.png"
+                            style="width: 0.7rem"
+                        />
+                        <div
+                            class="que-icon bg mr-6 ml-2"
+                            @click.stop="mesVisible = true"
+                        ></div>
                     </div>
+
                     <span class="lh-1">亲情号</span>
                 </div>
             </div>
@@ -55,11 +62,6 @@
             }
         },
         components: {},
-        computed: {
-            student() {
-                return this.$store.state.curStudent
-            },
-        },
         methods: {
             goPage(index) {
                 if (index == 0) {
@@ -69,8 +71,19 @@
                 }
             },
         },
+        created() {
+            let curStudent = JSON.parse(localStorage.getItem('curStudent'))
+            if (curStudent) {
+                this.$store.commit('saveCurStudent', curStudent)
+                this.$store.commit('loginState', true)
+            }
+        },
     }
 </script>
 
+// 刷新不影响首页！！
 <style lang="scss" scoped >
+    .que-icon {
+        background-image: url('../assets/img/que.png');
+    }
 </style>
